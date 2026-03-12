@@ -1767,6 +1767,13 @@ def run_solver(n_clicks, goal, n_vars, n_constraints,
         )
 
     # ── Run solver ────────────────────────────────────────────────────────
+    print("=" * 60)
+    print(f"[DEBUG] n={n}, m={m}, goal={goal}")
+    print(f"[DEBUG] objective = {objective}")
+    print(f"[DEBUG] constraints = {constraints}")
+    print(f"[DEBUG] types = {types}")
+    print(f"[DEBUG] con_coeff_vals = {list(con_coeff_vals)}")
+    print("=" * 60)
     try:
         init      = standardize(objective, constraints, types, goal)
         var_names = init["var_names"]
