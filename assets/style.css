@@ -1,0 +1,133 @@
+/* assets/style.css — global styles for the Simplex Solver app */
+
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
+}
+
+.main-container {
+    width: 100%;
+    padding: 0 1rem 3rem;
+}
+
+h1 {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* Input cards */
+.input-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+/* ── Simplex tableau table ───────────────────────────────────────────────── */
+/* Result panel: két quả ngang đầy đủ, co dãn responsive */
+.result-split-panel {
+    display: flex;
+    flex-direction: row;
+    gap: 0;
+    width: 100%;
+}
+/* Trên mobile: bỏ border dọc, thêm border ngang giữa 2 panel */
+@media (max-width: 767px) {
+    .result-split-panel .col-md-6 {
+        border-right: none !important;
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 1.5rem;
+    }
+    /* Bootstrap border-end trên mobile */
+    .border-end {
+        border-right: none !important;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #dee2e6 !important;
+    }
+    /* Bảng tableau cuộn ngang tự do trên màn hình nhỏ */
+    .simplex-tableau {
+        font-size: 0.78rem;
+    }
+}
+
+.simplex-tableau {
+    font-size: 0.88rem;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+.simplex-tableau th,
+.simplex-tableau td {
+    border: 1px solid #b0bec5;
+    padding: 0.45rem 0.85rem;
+    white-space: nowrap;
+}
+
+/* Header: dark blue, white text, centred */
+.simplex-tableau thead th {
+    background-color: #2c3e50;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+/* Striped constraint rows (odd/even within tbody) */
+.simplex-tableau tbody tr:nth-child(odd):not(.tableau-z-row) {
+    background-color: #ffffff;
+}
+.simplex-tableau tbody tr:nth-child(even):not(.tableau-z-row) {
+    background-color: #ecf0f1;
+}
+
+/* Objective (Z) row — light yellow, bold */
+.simplex-tableau .tableau-z-row td {
+    background-color: #fffde7 !important;
+    font-weight: 700;
+    border-top: 2px solid #b0bec5;
+}
+
+/* Ratio column cells — light grey */
+.simplex-tableau .tableau-ratio {
+    background-color: #f5f5f5 !important;
+    color: #546e7a;
+    font-style: italic;
+}
+
+/* ── Pivot highlights ────────────────────────────────────────────────────── */
+.simplex-tableau .pivot-col {
+    background-color: #e8f5e9 !important;
+}
+
+.simplex-tableau .pivot-row {
+    background-color: #fff3e0 !important;
+}
+
+.simplex-tableau .pivot-cell {
+    background-color: #e53935 !important;
+    color: #fff !important;
+    font-weight: bold !important;
+}
+
+.simplex-tableau .pivot-cell:hover {
+    color: #000 !important;
+}
+
+/* Any cell turning blue on hover: force black text on cell and all children */
+.simplex-tableau td:hover,
+.simplex-tableau td.highlight-linked,
+.simplex-tableau td:hover *,
+.simplex-tableau td.highlight-linked * {
+    color: #000 !important;
+}
+
+/* Min-ratio cell — yellow highlight */
+.simplex-tableau .min-ratio {
+    background-color: #fff176 !important;
+    font-weight: bold;
+}
+
+/* Hover-link: b cell and pivot-col cell highlighted when its Ratio is hovered */
+.simplex-tableau td.highlight-linked {
+    background-color: #b3e5fc !important;
+    outline: 2px solid #0288d1;
+}

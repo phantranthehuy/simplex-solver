@@ -1,0 +1,4 @@
+dash==2.18.2
+dash-bootstrap-components==1.6.0
+numpy>=2.3
+dash-katex==0.0.1
