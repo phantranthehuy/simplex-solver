@@ -24,7 +24,7 @@ services:
       - key: FRONTEND_DEBUG
         value: "0"
       - key: SIMPLEX_API_BASE_URL
-        value: https://replace-with-your-backend-url.onrender.com
+        value: https://simplex-backend-u912.onrender.com
       - key: SIMPLEX_API_SOLVE_PATH
         value: /api/v1/simplex/solve
       - key: SIMPLEX_API_TIMEOUT
