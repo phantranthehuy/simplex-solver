@@ -1,7 +1,0 @@
-dash>=2.17
-# dash_bootstrap_components 1.x is compatible with most Dash 2.x setups
-dash-bootstrap-components>=1.6
-# Keep current dependency used by legacy code
-dash-katex>=0.0.1
-httpx>=0.28
-numpy>=2.0
