@@ -46,8 +46,19 @@ def _xsub(j: int):
     """Return an inline math label for x_j."""
     return dk.DashKatex(expression=_var_label(f"x{j}"), displayMode=False)
 
-def _step_header(step_num: int, title: str, tooltip_content, uid: str):
+def _step_header(
+    step_num: int,
+    title: str,
+    tooltip_text=None,
+    uid: str = "",
+    tooltip_content=None,
+):
     """Numbered step title with hover tooltip."""
+    if tooltip_content is None:
+        tooltip_content = tooltip_text
+    if tooltip_content is None:
+        tooltip_content = ""
+
     tid = f"tt-{uid}"
     return html.Div([
         html.Span(
@@ -60,8 +71,13 @@ def _step_header(step_num: int, title: str, tooltip_content, uid: str):
     ], className="mt-3 mb-1")
 
 
-def _hover_term(label: str, tooltip_content, uid: str):
+def _hover_term(label: str, tooltip_text=None, uid: str = "", tooltip_content=None):
     """Inline term with hover tooltip used for glossary-like hints."""
+    if tooltip_content is None:
+        tooltip_content = tooltip_text
+    if tooltip_content is None:
+        tooltip_content = ""
+
     tid = f"term-tt-{uid}"
     return html.Span([
         html.Span(
