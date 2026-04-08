@@ -60,7 +60,7 @@ def _step_header(step_num: int, title: str, tooltip_content, uid: str):
     ], className="mt-3 mb-1")
 
 
-    def _hover_term(label: str, tooltip_content, uid: str):
+def _hover_term(label: str, tooltip_content, uid: str):
     """Inline term with hover tooltip used for glossary-like hints."""
     tid = f"term-tt-{uid}"
     return html.Span([

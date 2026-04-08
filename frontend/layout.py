@@ -265,12 +265,31 @@ def create_layout(app):
     # ── Footer ────────────────────────────────────────────────────────────
     footer = html.Footer(
         html.Div(
-            "Kỹ thuật ra Quyết định EE3145",
-            className="text-center text-muted small py-2",
+            [
+                html.Div(
+                    [
+                        # Phần bên trái: Tên môn học & Bản quyền
+                        html.Span("© 2026 Kỹ thuật ra Quyết định - EE3145", className="fw-bold"),
+                        html.Span(" | Phát triển Web App phương pháp Đơn hình ứng dụng cho học tập", className="ms-2 d-none d-sm-inline"),
+                    ],
+                    className="text-muted small",
+                ),
+                html.Div(
+                    [
+                        # Phần bên phải: Số phiên bản
+                        html.Span("Phiên bản: ", className="text-muted me-1"),
+                        dbc.Badge("2.0.3", color="primary", className="rounded-pill"),
+                    ],
+                    className="small",
+                ),
+            ],
+            className="container-fluid d-flex justify-content-between align-items-center py-2 px-4",
         ),
         className="position-fixed w-100 bottom-0 bg-white border-top shadow-sm",
         style={
             "zIndex": 1030,
+            "backdropFilter": "blur(5px)",  # Tạo hiệu ứng mờ kính nhẹ cho hiện đại
+            "backgroundColor": "rgba(255, 255, 255, 0.8)",  # Làm nền hơi trong suốt
         },
     )
 
