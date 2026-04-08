@@ -71,8 +71,17 @@ def create_layout(app):
                 }
             ),
         ],
-        className="bg-primary text-white py-2 d-flex align-items-center position-fixed top-0 w-100 shadow",
-        style={"zIndex": 1030, "minHeight": "56px"},
+        className="text-white py-2 d-flex align-items-center position-fixed top-0 w-100",
+        style={
+            "zIndex": 1030,
+            "minHeight": "56px",
+            # Đã giảm độ opacity từ 0.86 xuống 0.5 để lớp kính trong suốt hơn
+            "backgroundColor": "rgba(11, 72, 177, 0.8)", 
+            "backdropFilter": "blur(5px) saturate(125%)",
+            "WebkitBackdropFilter": "blur(5px) saturate(125%) brightness(0.7)",
+            "borderBottom": "1px solid rgba(255, 255, 255, 0.18)",
+            "boxShadow": "0 6px 16px rgb        a(8, 46, 110, 0.28)",
+        },
     )
 
     # ── Step 1: Problem size + goal ───────────────────────────────────────
@@ -277,8 +286,8 @@ def create_layout(app):
                 html.Div(
                     [
                         # Phần bên phải: Số phiên bản
-                        html.Span("Phiên bản: ", className="text-muted me-1"),
-                        dbc.Badge("2.0.3", color="primary", className="rounded-pill"),
+                        html.Span("Version: ", className="text-muted me-1"),
+                        dbc.Badge("2.0.5", color="primary", className="rounded-pill"),
                     ],
                     className="small",
                 ),

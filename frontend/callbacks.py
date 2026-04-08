@@ -590,7 +590,14 @@ def render_tableau_static(step, var_names, z_offset=0.0, obj_label="Z", goal="ma
                       style={"cursor": "help",
                              "borderBottom": "1px dashed #90a4ae"}),
             dbc.Tooltip(
-                "theta_i = b_i / a_ij, a_ij > 0",
+                html.Div(
+                    [
+                        html.Span("Tính tỉ số: "),
+                        dk.DashKatex(expression=r"\theta_i = \frac{b_i}{a_{ij}},\ a_{ij} > 0", displayMode=False),
+                    ],
+                    className="d-flex align-items-center gap-1",
+                    style={"whiteSpace": "nowrap"},
+                ),
                 target=ratio_th_id,
                 placement="top",
             ),
@@ -1542,7 +1549,17 @@ def render_algebra_mode(steps, var_names, goal, objective, obj_constant=0.0):
                 html.Span(" là biến vào với ", className="ms-1"),
                 _hover_term(
                     "hệ số giảm",
-                    "Hệ số giảm Cbar_j đo mức thay đổi hàm mục tiêu khi tăng biến không cơ sở x_j từ 0.",
+                    html.Div(
+                        [
+                            html.Span("Hệ số giảm "),
+                            dk.DashKatex(expression=r"\bar{C}_j", displayMode=False),
+                            html.Span(" đo mức thay đổi hàm mục tiêu khi tăng biến không cơ sở "),
+                            dk.DashKatex(expression=r"x_j", displayMode=False),
+                            html.Span(" từ 0."),
+                        ],
+                        className="d-flex align-items-center gap-1",
+                        style={"whiteSpace": "nowrap"},
+                    ),
                     f"rc-p1-{p1_idx + 1}",
                 ),
                 dk.DashKatex(expression=rf"\bar{{C}}^W = {_fmt(c_enter_w)}", displayMode=False),
@@ -1892,12 +1909,22 @@ def render_algebra_mode(steps, var_names, goal, objective, obj_constant=0.0):
             html.Span("là biến cơ sở mới với"),
             _hover_term(
                 "hệ số giảm",
-                "Hệ số giảm Cbar_j đo mức thay đổi hàm mục tiêu khi tăng biến không cơ sở x_j từ 0.",
+                html.Div(
+                    [
+                        html.Span("Hệ số giảm "),
+                        dk.DashKatex(expression=r"\bar{C}_j", displayMode=False),
+                        html.Span(" đo mức thay đổi hàm mục tiêu khi tăng biến không cơ sở "),
+                        dk.DashKatex(expression=r"x_j", displayMode=False),
+                        html.Span(" từ 0."),
+                    ],
+                    className="d-flex align-items-center gap-1",
+                    style={"whiteSpace": "nowrap"},
+                ),
                 f"rc-p2-{iter_idx}",
             ),
             dk.DashKatex(expression=rf"\bar{{C}} = {_fmt(c_enter)}", displayMode=False),
             html.Span(f"({sign_word} trong các biến không cơ sở)."),
-        ], className="d-flex align-items-center flex-wrap gap-1 mb-2"))
+        ], className="d-flex align-items-center gap-1 mb-2", style={"whiteSpace": "nowrap", "overflowX": "auto"})) 
 
         blocks.append(html.Div(
             "+ Chọn biến từ cơ sở chuyển sang không cơ sở (min ratio test):",
