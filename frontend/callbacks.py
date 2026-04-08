@@ -46,7 +46,7 @@ def _xsub(j: int):
     """Return an inline math label for x_j."""
     return dk.DashKatex(expression=_var_label(f"x{j}"), displayMode=False)
 
-def _step_header(step_num: int, title: str, tooltip_text: str, uid: str):
+def _step_header(step_num: int, title: str, tooltip_content, uid: str):
     """Numbered step title with hover tooltip."""
     tid = f"tt-{uid}"
     return html.Div([
@@ -56,11 +56,11 @@ def _step_header(step_num: int, title: str, tooltip_text: str, uid: str):
             className="fw-semibold text-primary d-inline-block",
             style={"cursor": "help", "borderBottom": "1px dashed #0d6efd"},
         ),
-        dbc.Tooltip(tooltip_text, target=tid, placement="top"),
+        dbc.Tooltip(tooltip_content, target=tid, placement="top"),
     ], className="mt-3 mb-1")
 
 
-def _hover_term(label: str, tooltip_text: str, uid: str):
+    def _hover_term(label: str, tooltip_content, uid: str):
     """Inline term with hover tooltip used for glossary-like hints."""
     tid = f"term-tt-{uid}"
     return html.Span([
@@ -69,7 +69,7 @@ def _hover_term(label: str, tooltip_text: str, uid: str):
             id=tid,
             style={"cursor": "help", "borderBottom": "1px dotted #6c757d"},
         ),
-        dbc.Tooltip(tooltip_text, target=tid, placement="top"),
+        dbc.Tooltip(tooltip_content, target=tid, placement="top"),
     ], className="d-inline-flex align-items-center")
 
 
@@ -131,9 +131,28 @@ def _unbounded_payload(step, var_names):
 
 def _unbounded_tooltip_text(step, var_names):
     info = _unbounded_payload(step, var_names)
-    return (
-        f"Cột biến vào {info['entering_name']} không có hàng pivot hợp lệ. "
-        "Min-ratio test thất bại vì a_ij <= 0 với mọi hàng khả xét, nên |Z| -> inf."
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.Span("Cột biến vào "),
+                    dk.DashKatex(expression=info["entering_label"], displayMode=False),
+                    html.Span(" không có hàng pivot hợp lệ."),
+                ],
+                className="d-flex align-items-center flex-wrap gap-1",
+            ),
+            html.Div(
+                [
+                    html.Span("Min-ratio test thất bại vì "),
+                    dk.DashKatex(expression=r"a_{ij} \le 0\ \forall i", displayMode=False),
+                    html.Span(", nên "),
+                    dk.DashKatex(expression=r"|Z|\to\infty", displayMode=False),
+                    html.Span("."),
+                ],
+                className="d-flex align-items-center flex-wrap gap-1",
+            ),
+        ],
+        className="tooltip-math",
     )
 
 
@@ -664,22 +683,71 @@ def render_table_mode(steps, var_names, obj_constant=0.0, goal="max"):
         """Return a short theory summary for the step header tooltip."""
         name = step.get("step_name", "")
         if name == "Bảng ban đầu":
-            return "Thêm biến bù để đổi ràng buộc thành đẳng thức. s_i >= 0, x_j = 0."
+            return html.Div(
+                [
+                    html.Div("Thêm biến bù để đổi ràng buộc thành đẳng thức."),
+                    html.Div(
+                        [
+                            dk.DashKatex(expression=r"s_i \ge 0", displayMode=False),
+                            html.Span(","),
+                            dk.DashKatex(expression=r"x_j = 0", displayMode=False),
+                            html.Span("."),
+                        ],
+                        className="d-flex align-items-center flex-wrap gap-1",
+                    ),
+                ],
+                className="tooltip-math",
+            )
         if name == "Nghiệm tối ưu":
-            cmp_text = "Cbar_j >= 0" if goal == "min" else "Cbar_j <= 0"
-            return f"Điều kiện tối ưu thỏa cho mọi biến không cơ sở: {cmp_text}."
+            cmp_expr = r"\bar{C}_j \ge 0" if goal == "min" else r"\bar{C}_j \le 0"
+            return html.Div(
+                [
+                    html.Span("Điều kiện tối ưu thỏa cho mọi biến không cơ sở: "),
+                    dk.DashKatex(expression=cmp_expr, displayMode=False),
+                    html.Span("."),
+                ],
+                className="tooltip-math d-flex align-items-center flex-wrap gap-1",
+            )
         if name == "Không bị chặn":
             return _unbounded_tooltip_text(step, var_names)
         if name == "Vô nghiệm":
-            return "Biến nhân tạo vẫn còn trong cơ sở ở trạng thái dừng: a_i != 0."
+            return html.Div(
+                [
+                    html.Span("Biến nhân tạo vẫn còn trong cơ sở ở trạng thái dừng: "),
+                    dk.DashKatex(expression=r"a_i \ne 0", displayMode=False),
+                    html.Span("."),
+                ],
+                className="tooltip-math d-flex align-items-center flex-wrap gap-1",
+            )
         # Iteration step — include entering/leaving info
         pc = step.get("pivot_col")
         pr = step.get("pivot_row")
         entering = var_names[pc] if pc is not None else "?"
         leaving  = step["basis"][pr - 1] if pr is not None else "?"
-        return (
-            f"Biến vào: {entering}, Biến ra: {leaving}. "
-            "Dùng min-ratio test: theta_i = b_i / a_ij với a_ij > 0."
+        entering_label = _var_label(entering)
+        leaving_label = _var_label(leaving)
+        return html.Div(
+            [
+                html.Div(
+                    [
+                        html.Span("Biến vào: "),
+                        dk.DashKatex(expression=entering_label, displayMode=False),
+                        html.Span(", Biến ra: "),
+                        dk.DashKatex(expression=leaving_label, displayMode=False),
+                        html.Span("."),
+                    ],
+                    className="d-flex align-items-center flex-wrap gap-1",
+                ),
+                html.Div(
+                    [
+                        html.Span("Dùng min-ratio test: "),
+                        dk.DashKatex(expression=r"\theta_i = \frac{b_i}{a_{ij}},\ a_{ij}>0", displayMode=False),
+                        html.Span("."),
+                    ],
+                    className="d-flex align-items-center flex-wrap gap-1",
+                ),
+            ],
+            className="tooltip-math",
         )
 
     def _step_header(step, idx):
