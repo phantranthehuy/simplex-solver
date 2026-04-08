@@ -39,6 +39,7 @@ app.layout = create_layout(app)
 
 if __name__ == "__main__":
     host = os.getenv("FRONTEND_HOST", "127.0.0.1")
-    port = int(os.getenv("FRONTEND_PORT", "8050"))
-    debug = os.getenv("FRONTEND_DEBUG", "1").lower() in {"1", "true", "yes", "on"}
+    # Render injects PORT; keep FRONTEND_PORT for local/dev compatibility.
+    port = int(os.getenv("PORT", os.getenv("FRONTEND_PORT", "8050")))
+    debug = os.getenv("FRONTEND_DEBUG", "0").lower() in {"1", "true", "yes", "on"}
     app.run(debug=debug, dev_tools_ui=False, host=host, port=port)

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: simplex-backend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.2
+
+  - type: web
+    name: simplex-frontend
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python frontend/app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.2
+      - key: FRONTEND_HOST
+        value: 0.0.0.0
+      - key: FRONTEND_DEBUG
+        value: "0"
+      - key: SIMPLEX_API_BASE_URL
+        value: https://replace-with-your-backend-url.onrender.com
+      - key: SIMPLEX_API_SOLVE_PATH
+        value: /api/v1/simplex/solve
+      - key: SIMPLEX_API_TIMEOUT
+        value: "30"

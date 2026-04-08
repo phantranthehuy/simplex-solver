@@ -1,26 +1,26 @@
 # Hybrid Simplex Solver
 
-Tai lieu tong hop chinh thuc cua du an.
+Tài liệu tổng hợp chính thức của dự án.
 
-## 1) Mo ta ngan
+## 1) Mô tả ngắn
 
-He thong giai bai toan Quy hoach Tuyen tinh (Linear Programming) bang Simplex, ho tro 2 che do:
+Hệ thống giải bài toán Quy hoạch Tuyến tính (Linear Programming) bằng Simplex, hỗ trợ 2 chế độ:
 
-- learning: tra ve toan bo cac buoc giai de hoc tap (snapshot tung bang, pivot, ratio, giai thich).
-- production: tra ve ket qua gon va nhanh cho van hanh (khong tra ve mang steps lon).
+- learning: trả về toàn bộ các bước giải để học tập (snapshot từng bảng, pivot, ratio, giải thích).
+- production: trả về kết quả gọn và nhanh cho vận hành (không trả về mảng steps lớn).
 
-He thong duoc tach lop ro rang:
+Hệ thống được tách lớp rõ ràng:
 
 - Backend API: FastAPI
 - Frontend UI: Dash + Bootstrap + KaTeX
-- Legacy code: luu de tham khao va doi chieu
+- Legacy code: lưu để tham khảo và đối chiếu
 
-## 2) Ngon ngu va thu vien su dung
+## 2) Ngôn ngữ và thư viện sử dụng
 
-### 2.1 Ngon ngu
+### 2.1 Ngôn ngữ
 
 - Python 3.12+
-- Bash (script van hanh va benchmark)
+- Bash (script vận hành và benchmark)
 
 ### 2.2 Backend libraries
 
@@ -41,65 +41,65 @@ Theo [frontend/requirements.txt](frontend/requirements.txt):
 - httpx
 - numpy
 
-### 2.4 Kiem thu
+### 2.4 Kiểm thử
 
 Theo [requirements-dev.txt](requirements-dev.txt):
 
 - pytest
 
-## 3) Giai thuat va pipeline
+## 3) Giải thuật và pipeline
 
-### 3.1 Stage 1 - Parser + Chuan hoa + Presolve
+### 3.1 Stage 1 - Parser + Chuẩn hóa + Presolve
 
-- Dong bo muc tieu max/min noi bo.
-- Chuan hoa RHS (neu b_i < 0 thi nhan -1 ca dong va dao dau bat dang thuc).
-- Ho tro bien tu do: x = x_plus - x_minus.
-- Presolve co ban:
-  - scaling theo dong,
-  - loai rang buoc du thua,
-  - phat hien mau thuan som.
+- Đồng bộ mục tiêu max/min nội bộ.
+- Chuẩn hóa RHS (nếu b_i < 0 thì nhân -1 cả dòng và đảo dấu bất đẳng thức).
+- Hỗ trợ biến tự do: x = x_plus - x_minus.
+- Presolve cơ bản:
+  - scaling theo dòng,
+  - loại bỏ ràng buộc dư thừa,
+  - phát hiện mâu thuẫn sớm.
 
-File chinh: [backend/algorithms/stage1_parser.py](backend/algorithms/stage1_parser.py)
+File chính: [backend/algorithms/stage1_parser.py](backend/algorithms/stage1_parser.py)
 
-### 3.2 Stage 2 - Dua ve dang chuan va khoi tao 2 pha
+### 3.2 Stage 2 - Đưa về dạng chuẩn và khởi tạo 2 pha
 
-- Tao slack/surplus/artificial.
-- Doi co so tu nhien neu co.
-- Khoi tao tableau phu hop cho pha 1/pha 2.
+- Tạo slack/surplus/artificial.
+- Đối cơ sở tự nhiên nếu có.
+- Khởi tạo tableau phù hợp cho pha 1/pha 2.
 
-File chinh: [backend/algorithms/stage2_standardizer.py](backend/algorithms/stage2_standardizer.py)
+File chính: [backend/algorithms/stage2_standardizer.py](backend/algorithms/stage2_standardizer.py)
 
 ### 3.3 Stage 3 - Full Tableau (learning mode)
 
-- Vong lap pivot day du.
+- Vòng lặp pivot đầy đủ.
 - Ratio test.
 - Gauss-Jordan.
 - Snapshot JSON-safe cho frontend.
-- Co tich hop Bland tie-break khi suy bien.
+- Có tích hợp Bland tie-break khi suy biến.
 
-File chinh: [backend/algorithms/stage3_full_tableau.py](backend/algorithms/stage3_full_tableau.py)
+File chính: [backend/algorithms/stage3_full_tableau.py](backend/algorithms/stage3_full_tableau.py)
 
 ### 3.4 Stage 4 - Bland rule
 
-- Chon bien vao/ra theo thu tu chi so khi co tie.
-- Muc tieu: tranh cycling.
+- Chọn biến vào/ra theo thứ tự chỉ số khi có tie.
+- Mục tiêu: tránh cycling.
 
-File chinh: [backend/algorithms/stage4_bland_rules.py](backend/algorithms/stage4_bland_rules.py)
+File chính: [backend/algorithms/stage4_bland_rules.py](backend/algorithms/stage4_bland_rules.py)
 
 ### 3.5 Stage 5 - Revised simplex (production mode)
 
-- Giai he theo huong revised simplex.
-- Tang on dinh so hoc bang stable solve + fallback least squares.
-- Tra output gon + sensitivity report.
+- Giải hệ theo hướng revised simplex.
+- Tăng ổn định số học bằng stable solve + fallback least squares.
+- Trả output gọn + sensitivity report.
 
-File chinh: [backend/algorithms/stage5_revised_simplex.py](backend/algorithms/stage5_revised_simplex.py)
+File chính: [backend/algorithms/stage5_revised_simplex.py](backend/algorithms/stage5_revised_simplex.py)
 
-## 4) Dieu huong che do giai
+## 4) Điều hướng chế độ giải
 
 - learning: Stage 1 -> Stage 2 -> Stage 3
 - production: Stage 1 -> Stage 4 -> Stage 5
 
-Duoc xu ly tai [backend/api/simplex_router.py](backend/api/simplex_router.py)
+Được xử lý tại [backend/api/simplex_router.py](backend/api/simplex_router.py)
 
 ## 5) API contract
 
@@ -121,7 +121,7 @@ Duoc xu ly tai [backend/api/simplex_router.py](backend/api/simplex_router.py)
 }
 ```
 
-### 5.3 Learning response (tom tat)
+### 5.3 Learning response (tóm tắt)
 
 - status, mode, message
 - steps[] (step-by-step)
@@ -129,7 +129,7 @@ Duoc xu ly tai [backend/api/simplex_router.py](backend/api/simplex_router.py)
 - normalization
 - normalized_model
 
-### 5.4 Production response (tom tat)
+### 5.4 Production response (tóm tắt)
 
 - status, mode, message
 - result:
@@ -145,33 +145,33 @@ Duoc xu ly tai [backend/api/simplex_router.py](backend/api/simplex_router.py)
 
 ## 6) Guardrails runtime
 
-Tai [backend/api/simplex_router.py](backend/api/simplex_router.py):
+Tại [backend/api/simplex_router.py](backend/api/simplex_router.py):
 
-- Gioi han kich thuoc theo mode:
-  - learning: toi da 24 bien, 40 rang buoc, 720 o ma tran.
-  - production: toi da 200 bien, 400 rang buoc, 40000 o ma tran.
+- Giới hạn kích thước theo mode:
+  - learning: tối đa 24 biến, 40 ràng buộc, 720 ô ma trận.
+  - production: tối đa 200 biến, 400 ràng buộc, 40000 ô ma trận.
 - Soft timeout:
-  - learning: 6 giay
-  - production: 4 giay
-- Loi than thien khi qua tai (HTTP 413/503).
+  - learning: 6 giây
+  - production: 4 giây
+- Lỗi thân thiện khi quá tải (HTTP 413/503).
 
-## 7) Frontend va explainability
+## 7) Frontend và explainability
 
-Thanh phan chinh:
+Thành phần chính:
 
-- [frontend/layout.py](frontend/layout.py): bo cuc giao dien va control.
-- [frontend/callbacks.py](frontend/callbacks.py): dong bo input, goi API, render ket qua table/algebra/production.
-- [frontend/api_client.py](frontend/api_client.py): HTTP client den backend.
+- [frontend/layout.py](frontend/layout.py): bộ cục giao diện và control.
+- [frontend/callbacks.py](frontend/callbacks.py): đồng bộ input, gọi API, render kết quả table/algebra/production.
+- [frontend/api_client.py](frontend/api_client.py): HTTP client đến backend.
 
-Diem noi bat:
+Điểm nổi bật:
 
-- Hien thi bang Simplex co pivot/ratio.
-- Giai thich Dai so theo 2 muc do.
-- Tach ro Pha 1 / Pha 2.
-- Hien thi thong tin chuan hoa khi can.
-- Ho tro bat/tat card mo hinh da chuan hoa.
+- Hiển thị bảng Simplex có pivot/ratio.
+- Giải thích Đại số theo 2 mức độ.
+- Tách rõ Pha 1 / Pha 2.
+- Hiển thị thông tin chuẩn hóa khi cần.
+- Hỗ trợ bật/tắt card mô hình đã chuẩn hóa.
 
-## 8) Cau truc thu muc
+## 8) Cấu trúc thư mục
 
 ```text
 .
@@ -197,9 +197,9 @@ Diem noi bat:
    └─ old_system/
 ```
 
-## 9) Cai dat va chay du an
+## 9) Cài đặt và chạy dự án
 
-### 9.1 Tao moi truong
+### 9.1 Tạo môi trường
 
 ```bash
 python3 -m venv .venv
@@ -208,14 +208,14 @@ pip install -r requirements.txt
 pip install -r requirements-dev.txt
 ```
 
-### 9.2 Chay nhanh ca backend + frontend
+### 9.2 Chạy nhanh cả backend + frontend
 
 ```bash
 source .venv/bin/activate
 ./scripts/dev_up.sh
 ```
 
-### 9.3 Chay rieng backend
+### 9.3 Chạy riêng backend
 
 ```bash
 source .venv/bin/activate
@@ -223,14 +223,14 @@ cd backend
 uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### 9.4 Chay rieng frontend
+### 9.4 Chạy riêng frontend
 
 ```bash
 source .venv/bin/activate
 python frontend/app.py
 ```
 
-## 10) Kiem thu va benchmark
+## 10) Kiểm thử và benchmark
 
 ### 10.1 Smoke tests
 
@@ -239,14 +239,14 @@ source .venv/bin/activate
 ./scripts/test_smoke.sh
 ```
 
-### 10.2 Chay benchmark learning vs production
+### 10.2 Chạy benchmark learning vs production
 
 ```bash
 source .venv/bin/activate
 ./scripts/benchmark_modes.sh --n-vars 24 --extra-constraints 28 --cases 6
 ```
 
-## 11) Bien moi truong quan trong
+## 11) Biến môi trường quan trọng
 
 ### 11.1 Frontend -> Backend API
 
@@ -268,15 +268,53 @@ source .venv/bin/activate
 - FRONTEND_HOST
 - FRONTEND_PORT
 
-## 12) Tai lieu bo sung
+## 12) Tài liệu bổ sung
 
-- Danh muc luu do bao cao (chi liet ke): [DANH_MUC_LUU_DO_BAO_CAO.md](DANH_MUC_LUU_DO_BAO_CAO.md)
+- Danh mục lưu độ báo cáo (chi liet ke): [DANH_MUC_LUU_DO_BAO_CAO.md](DANH_MUC_LUU_DO_BAO_CAO.md)
 
-## 13) Trang thai du an
+## 13) Trạng thái dự án
 
-He thong da hoan thien theo scope hien tai:
+Hệ thống đã hoàn thiện theo scope hiện tại:
 
-- learning mode hoat dong on dinh, co day du explainability.
-- production mode hoat dong voi ket qua compact + sensitivity.
-- guardrails runtime va smoke test da duoc tich hop.
+- learning mode hoạt động ổn định, có đầy đủ explainability.
+- production mode hoạt động với kết quả compact + sensitivity.
+- guardrails runtime và smoke test đã được tích hợp.
 
+## 14) Deploy lên Render
+
+### 14.1 Cách nhanh bằng Blueprint
+
+Repository đã có sẵn file `render.yaml` ở root để tạo đồng thời 2 web services:
+
+- `simplex-backend` (FastAPI)
+- `simplex-frontend` (Dash)
+
+Các bước:
+
+1. Push code lên GitHub.
+2. Trên Render, chọn New + Blueprint và kết nối repo.
+3. Render sẽ đọc `render.yaml` và tạo 2 services.
+4. Sau khi backend lên xong, lấy URL backend dạng `https://...onrender.com`.
+5. Vào service frontend, sửa env `SIMPLEX_API_BASE_URL` đúng URL backend rồi deploy lại frontend.
+
+Lưu ý:
+
+- Frontend đã được cập nhật để tự nhận cổng Render qua biến `PORT`.
+- Giá trị placeholder trong `render.yaml` (`https://replace-with-your-backend-url.onrender.com`) bắt buộc phải thay bằng URL backend thật.
+
+### 14.2 Cách tạo thủ công 2 services
+
+Nếu không dùng Blueprint, tạo 2 Web Service riêng:
+
+1. Backend service
+  - Build Command: `pip install -r requirements.txt`
+  - Start Command: `uvicorn backend.main:app --host 0.0.0.0 --port $PORT`
+2. Frontend service
+  - Build Command: `pip install -r requirements.txt`
+  - Start Command: `python frontend/app.py`
+  - Env bắt buộc:
+    - `FRONTEND_HOST=0.0.0.0`
+    - `FRONTEND_DEBUG=0`
+    - `SIMPLEX_API_BASE_URL=https://<backend-service>.onrender.com`
+    - `SIMPLEX_API_SOLVE_PATH=/api/v1/simplex/solve`
+    - `SIMPLEX_API_TIMEOUT=30`
