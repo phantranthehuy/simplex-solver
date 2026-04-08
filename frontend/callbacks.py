@@ -140,6 +140,14 @@ def _unbounded_tooltip_text(step, var_names):
 def _unbounded_alert_components(step, var_names, detail_level="compact"):
     info = _unbounded_payload(step, var_names)
 
+    if info["invalid_rows"]:
+        detail_expr = r";\ ".join(
+            rf"{_var_label(item['basis'])}:\ a_{{ij}} = {_fmt(item['a'])}\le 0"
+            for item in info["invalid_rows"]
+        )
+    else:
+        detail_expr = r"\text{mọi hàng đều cho tỷ số không hợp lệ}"
+
     compact = [
         html.Span(
             [
@@ -160,15 +168,24 @@ def _unbounded_alert_components(step, var_names, detail_level="compact"):
 
     medium = compact + [
         html.Div(
-            f"Min-ratio test thất bại theo từng hàng: {info['reason_text']}.",
-            className="small mt-1",
+            dk.DashKatex(
+                expression=rf"\text{{Min-ratio test thất bại theo từng hàng: }}\ {detail_expr}",
+                displayMode=False,
+            ),
+            className="unbounded-inline unbounded-detail mt-1",
         )
     ]
     if detail_level == "medium":
         return medium
 
     return medium + [
-        html.Div("Suy ra không tồn tại biến rời cơ sở, nên ta có một tia khả thi làm hàm mục tiêu tăng vô hạn.", className="small mt-1"),
+        html.Div(
+            dk.DashKatex(
+                expression=r"\text{Suy ra không tồn tại biến rời cơ sở, nên có một tia khả thi làm }\ |Z|\to\infty",
+                displayMode=False,
+            ),
+            className="unbounded-inline unbounded-detail mt-1",
+        ),
     ]
 
 

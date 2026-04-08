@@ -144,6 +144,11 @@ h1 {
     line-height: 1;
 }
 
+.unbounded-detail {
+    font-size: 0.96rem;
+    opacity: 0.95;
+}
+
 /* Min-ratio cell — yellow highlight */
 .simplex-tableau .min-ratio {
     background-color: #fff176 !important;
