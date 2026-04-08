@@ -477,9 +477,9 @@ def _render_phase1_summary(steps, var_names):
     blocks = []
     blocks.append(dbc.Badge(
         "Pha 1 \u2014 T\u00ecm l\u1eddi gi\u1ea3i c\u01a1 s\u1edf kh\u1ea3 thi (BFS)",
-        color="warning", pill=True,
+        color="primary", pill=True,
         className="fs-6 mb-3 px-3 py-2",
-        style={"color": "#664d03"},
+        style={"color": "#032b66"},
     ))
     blocks.append(dbc.Alert([
         html.Span(
@@ -525,9 +525,9 @@ def _render_phase1_summary(steps, var_names):
     ))
     blocks.append(dbc.Badge(
         "Pha 2 \u2014 T\u1ed1i \u01b0u h\u00f3a h\u00e0m m\u1ee5c ti\u00eau g\u1ed1c",
-        color="warning", pill=True,
+        color="primary", pill=True,
         className="fs-6 mb-3 px-3 py-2",
-        style={"color": "#664d03"},
+        style={"color": "#ffffff"},
     ))
     return blocks, True
 
@@ -921,9 +921,9 @@ def render_algebra_mode_classic(steps, var_names, goal, objective, obj_constant=
 
         blocks.append(dbc.Badge(
             "Pha 1 — Tìm lời giải cơ sở khả thi (BFS)",
-            color="warning", pill=True,
+            color="primary", pill=True,
             className="fs-6 mb-3 px-3 py-2",
-            style={"color": "#664d03"},
+            style={"color": "#ffffff"},
         ))
         blocks.append(dbc.Alert(
             html.Div([
@@ -932,7 +932,7 @@ def render_algebra_mode_classic(steps, var_names, goal, objective, obj_constant=
                 html.Span(". Mục tiêu: ", className="ms-1"),
                 dk.DashKatex(expression=format_w_objective(art_vars)),
             ], className="d-flex align-items-center flex-wrap gap-1"),
-            color="warning", className="mb-3"
+            color="primary", className="mb-3"
         ))
 
         p1_pivots = [s for s in p1_steps if s["pivot_row"] is not None]
@@ -985,9 +985,9 @@ def render_algebra_mode_classic(steps, var_names, goal, objective, obj_constant=
 
         blocks.append(dbc.Badge(
             "Pha 2 — Tối ưu hóa hàm mục tiêu gốc",
-            color="warning", pill=True,
+            color="primary", pill=True,
             className="fs-6 mb-3 px-3 py-2",
-            style={"color": "#664d03"},
+            style={"color": "#ffffff"},
         ))
         if p2_steps:
             var_names = p2_steps[0].get("var_names") or var_names
@@ -1092,7 +1092,7 @@ def render_algebra_mode_classic(steps, var_names, goal, objective, obj_constant=
             _math(r", \quad ".join(cj_parts)),
             dbc.Badge(
                 "Chưa tối ưu — cần tiếp tục" if not_opt else "Đã tối ưu",
-                color="warning" if not_opt else "success",
+                color="primary" if not_opt else "success",
                 className="ms-1",
             ),
         ]))
@@ -1399,7 +1399,7 @@ def render_algebra_mode(steps, var_names, goal, objective, obj_constant=0.0):
         obj_latex += rf" {sign} {c_str}"
     blocks.append(dbc.Alert(
         [html.Strong("Hàm mục tiêu: "), dk.DashKatex(expression=obj_latex)],
-        color="info", className="mb-3",
+        color="#d8d8d8", className="mb-3",
     ))
 
     # ── Split Phase 1 / Phase 2 ──────────────────────────────────────────
@@ -1421,9 +1421,9 @@ def render_algebra_mode(steps, var_names, goal, objective, obj_constant=0.0):
         # ── Phase 1 header ────────────────────────────────────────────────
         blocks.append(dbc.Badge(
             "Pha 1 — Tìm lời giải cơ sở khả thi (BFS)",
-            color="warning", pill=True,
+            color="primary", pill=True,
             className="fs-6 mb-3 px-3 py-2",
-            style={"color": "#664d03"},
+            style={"color": "#ffffff"},
         ))
         blocks.append(dbc.Alert([
             html.Div([
@@ -1713,9 +1713,9 @@ def render_algebra_mode(steps, var_names, goal, objective, obj_constant=0.0):
 
         blocks.append(dbc.Badge(
             "Pha 2 — Tối ưu hóa hàm mục tiêu gốc",
-            color="warning", pill=True,
+            color="primary", pill=True,
             className="fs-6 mb-3 px-3 py-2",
-            style={"color": "#664d03"},
+            style={"color": "#ffffff"},
         ))
 
         blocks.append(html.Div(
@@ -2110,37 +2110,54 @@ def generate_inputs(n_vars, n_constraints):
     n = max(1, min(UI_MAX_DIM, int(n_vars)        if n_vars        is not None else 2))
     m = max(1, min(UI_MAX_DIM, int(n_constraints) if n_constraints is not None else 2))
 
+    def _item(child, fixed=False):
+        cls = "lp-input-item lp-input-item-fixed" if fixed else "lp-input-item"
+        return html.Div(child, className=cls)
+
     # ── Objective coefficient inputs ──────────────────────────────────────
     obj_parts = []
     for j in range(n):
-        obj_parts.append(dbc.InputGroup([
-            dbc.Input(
-                id={"type": "obj-coeff", "index": j},
-                type="text", inputMode="decimal", placeholder=f"c{_sub(j+1)}",
-                style={"width": "72px"}, size="sm",
-            ),
-            dbc.InputGroupText(_xsub(j+1), className="lp-math-affix"),
-            *([] if j == n - 1 else [dbc.InputGroupText("+")]),
-        ], className="me-1 mb-1"))
+        obj_parts.append(
+            _item(
+                dbc.InputGroup(
+                    [
+                        dbc.Input(
+                            id={"type": "obj-coeff", "index": j},
+                            type="text",
+                            inputMode="decimal",
+                            placeholder=f"c{_sub(j+1)}",
+                            size="sm",
+                        ),
+                        dbc.InputGroupText(_xsub(j+1), className="lp-math-affix"),
+                        *([] if j == n - 1 else [dbc.InputGroupText("+")]),
+                    ],
+                    className="mb-1",
+                )
+            )
+        )
 
     # ── Variable sign selectors ───────────────────────────────────────────
     sign_parts = []
     for j in range(n):
         sign_parts.append(
-            dbc.InputGroup([
-                dbc.InputGroupText(_xsub(j + 1), className="lp-math-affix"),
-                dbc.Select(
-                    id={"type": "var-sign", "index": j},
-                    options=[
-                        {"label": f"x{_sub(j+1)} ≥ 0", "value": "nonnegative"},
-                        {"label": f"x{_sub(j+1)} ∈ ℝ", "value": "free"},
+            _item(
+                dbc.InputGroup(
+                    [
+                        dbc.InputGroupText(_xsub(j + 1), className="lp-math-affix"),
+                        dbc.Select(
+                            id={"type": "var-sign", "index": j},
+                            options=[
+                                {"label": f"x{_sub(j+1)} ≥ 0", "value": "nonnegative"},
+                                {"label": f"x{_sub(j+1)} ∈ ℝ", "value": "free"},
+                            ],
+                            value="nonnegative",
+                            size="sm",
+                            className="lp-math-select",
+                        ),
                     ],
-                    value="nonnegative",
-                    size="sm",
-                    style={"width": "145px"},
-                    className="lp-math-select",
-                ),
-            ], className="me-1 mb-1")
+                    className="mb-1",
+                )
+            )
         )
 
     # ── Constraint rows ───────────────────────────────────────────────────
@@ -2149,48 +2166,70 @@ def generate_inputs(n_vars, n_constraints):
     for i in range(m):
         parts = []
         for j in range(n):
-            parts.append(dbc.InputGroup([
-                dbc.Input(
-                    id={"type": "con-coeff", "index": f"{i}_{j}"},
-                    type="text", inputMode="decimal", placeholder=f"a{_sub(i+1)}{_sub(j+1)}",
-                    style={"width": "72px"}, size="sm",
+            parts.append(
+                _item(
+                    dbc.InputGroup(
+                        [
+                            dbc.Input(
+                                id={"type": "con-coeff", "index": f"{i}_{j}"},
+                                type="text",
+                                inputMode="decimal",
+                                placeholder=f"a{_sub(i+1)}{_sub(j+1)}",
+                                size="sm",
+                            ),
+                            dbc.InputGroupText(_xsub(j+1), className="lp-math-affix"),
+                            *([] if j == n - 1 else [dbc.InputGroupText("+")]),
+                        ],
+                        className="mb-1",
+                    )
+                )
+            )
+
+        parts.append(
+            _item(
+                dbc.Select(
+                    id={"type": "con-type", "index": i},
+                    options=[
+                        {"label": "≤", "value": "<="},
+                        {"label": "≥", "value": ">="},
+                        {"label": "=", "value": "="},
+                    ],
+                    value="<=",
+                    size="sm",
+                    className="lp-math-select mb-1",
                 ),
-                dbc.InputGroupText(_xsub(j+1), className="lp-math-affix"),
-                *([] if j == n - 1 else [dbc.InputGroupText("+")]),
-            ], className="me-1 mb-1"))
-        parts.append(dbc.Select(
-            id={"type": "con-type", "index": i},
-            options=[
-                {"label": "≤", "value": "<="},
-                {"label": "≥", "value": ">="},
-                {"label": "=",  "value": "="},
-            ],
-            value="<=",
-            style={"width": "65px"}, size="sm",
-            className="me-1 mb-1 lp-math-select",
-        ))
-        parts.append(dbc.InputGroup([
-            dbc.Input(
-                id={"type": "con-rhs", "index": i},
-                type="text", inputMode="decimal", placeholder=f"b{_sub(i+1)}",
-                style={"width": "80px"}, size="sm",
-            ),
-        ], className="mb-1"))
+                fixed=True,
+            )
+        )
+
+        parts.append(
+            _item(
+                dbc.InputGroup(
+                    [
+                        dbc.Input(
+                            id={"type": "con-rhs", "index": i},
+                            type="text",
+                            inputMode="decimal",
+                            placeholder=f"b{_sub(i+1)}",
+                            size="sm",
+                        ),
+                    ],
+                    className="mb-1",
+                )
+            )
+        )
         con_rows.append(html.Div(
             [html.Span(f"Ràng buộc {i+1}: ", className="me-2 fw-semibold align-self-center text-nowrap")] + parts,
-            className="d-flex align-items-center flex-nowrap mb-2",
-            style={"overflowX": "auto"},
+            className="d-flex align-items-center mb-2 lp-input-row",
         ))
 
     obj_row = html.Div(
         obj_parts,
-        className="d-flex align-items-center flex-nowrap gap-1",
-        style={"overflowX": "auto"},
+        className="d-flex align-items-center gap-1 lp-input-row",
     )
     sign_row = html.Div(
         sign_parts,
-        className="d-flex align-items-center flex-nowrap gap-1",
-        style={"overflowX": "auto"},
+        className="d-flex align-items-center gap-1 lp-input-row",
     )
     return obj_row, sign_row, con_rows
 
@@ -2548,7 +2587,7 @@ def render_result(store_data, display_mode, algebra_visible, show_normalized_mod
             html.Div(
                 [
                     _hover_term(
-                        "hiệu chỉnh hằng số mục tiêu",
+                        "Hiệu chỉnh hằng số mục tiêu",
                         "d là hằng số cộng thêm vào giá trị mục tiêu cuối: Z = Z_tuyen_tinh + d.",
                         "objective-offset",
                     ),
@@ -2559,7 +2598,7 @@ def render_result(store_data, display_mode, algebra_visible, show_normalized_mod
                 ],
                 className="d-flex align-items-center flex-wrap gap-2",
             ),
-            color="warning",
+            color="#b9d2f1",
             className="mb-3",
         )
 

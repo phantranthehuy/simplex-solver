@@ -235,7 +235,7 @@ def test_render_result_shows_normalization_notices_consistently():
 
     assert "Chuẩn hóa RHS" in rendered_text
     assert "Tách biến tự do" in rendered_text
-    assert "hiệu chỉnh hằng số mục tiêu" in rendered_text
+    assert "Hiệu chỉnh hằng số mục tiêu" in rendered_text
 
 
 def test_render_result_hides_normalized_model_when_no_stage1_change():

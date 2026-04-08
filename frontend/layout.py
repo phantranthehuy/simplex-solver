@@ -43,6 +43,7 @@ def create_layout(app):
         [
             html.Div(
                 logo,
+                className="d-none d-lg-block",
                 style={
                     "position": "absolute",
                     "left": "20px",
@@ -62,6 +63,7 @@ def create_layout(app):
                     html.Div("Sinh viên thực hiện: Phan Trần Thế Huy", className="small lh-1"),
                     html.Div("MSSV: 2211259", className="small lh-1 mt-1"),
                 ],
+                className="d-none d-lg-block",
                 style={
                     "position": "absolute",
                     "right": "20px",
@@ -71,15 +73,16 @@ def create_layout(app):
                 }
             ),
         ],
-        className="text-white py-2 d-flex align-items-center position-fixed top-0 w-100",
+        className="py-2 d-flex align-items-center position-fixed top-0 w-100",
         style={
+            "color": "#303030",  # Primary blue
             "zIndex": 1030,
             "minHeight": "56px",
             # Đã giảm độ opacity từ 0.86 xuống 0.5 để lớp kính trong suốt hơn
-            "backgroundColor": "rgba(11, 72, 177, 0.8)", 
-            "backdropFilter": "blur(5px) saturate(125%)",
-            "WebkitBackdropFilter": "blur(5px) saturate(125%) brightness(0.7)",
-            "borderBottom": "1px solid rgba(255, 255, 255, 0.18)",
+            "backgroundColor": "rgba(255, 255, 255, 0.5)", 
+            "backdropFilter": "blur(8px) saturate(125%)",
+            "WebkitBackdropFilter": "blur(8px) saturate(125%) brightness(0.7)",
+            "borderBottom": "1px solid #d1d5db",
             "boxShadow": "0 6px 16px rgb        a(8, 46, 110, 0.28)",
         },
     )
@@ -287,7 +290,7 @@ def create_layout(app):
                     [
                         # Phần bên phải: Số phiên bản
                         html.Span("Version: ", className="text-muted me-1"),
-                        dbc.Badge("2.0.5", color="primary", className="rounded-pill"),
+                        dbc.Badge("2.1", color="primary", className="rounded-pill"),
                     ],
                     className="small",
                 ),
@@ -298,7 +301,7 @@ def create_layout(app):
         style={
             "zIndex": 1030,
             "backdropFilter": "blur(5px)",  # Tạo hiệu ứng mờ kính nhẹ cho hiện đại
-            "backgroundColor": "rgba(255, 255, 255, 0.8)",  # Làm nền hơi trong suốt
+            "backgroundColor": "rgba(255, 255, 255, 0.4)",  # Làm nền hơi trong suốt
         },
     )
 

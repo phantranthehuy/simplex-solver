@@ -81,7 +81,7 @@ h1 {
 
 /* Objective (Z) row — light yellow, bold */
 .simplex-tableau .tableau-z-row td {
-    background-color: #fffde7 !important;
+    background-color: #e7f4ff !important;
     font-weight: 700;
     border-top: 2px solid #b0bec5;
 }
@@ -95,21 +95,23 @@ h1 {
 
 /* ── Pivot highlights ────────────────────────────────────────────────────── */
 .simplex-tableau .pivot-col {
-    background-color: #e8f5e9 !important;
+    background-color: #d2dbe9 !important;
 }
 
 .simplex-tableau .pivot-row {
-    background-color: #fff3e0 !important;
+    background-color: #D0D7E1 !important;
 }
 
 .simplex-tableau .pivot-cell {
-    background-color: #e53935 !important;
+    background-color: #072D44 !important;
     color: #fff !important;
     font-weight: bold !important;
 }
 
 .simplex-tableau .pivot-cell:hover {
     color: #000 !important;
+    background-color: rgba(7, 45, 68, 0.5) !important;
+    filter: blur(0.8px);
 }
 
 /* Any cell turning blue on hover: force black text on cell and all children */
@@ -164,7 +166,7 @@ h1 {
 
 /* Min-ratio cell — yellow highlight */
 .simplex-tableau .min-ratio {
-    background-color: #fff176 !important;
+    background-color: #ffffff !important;
     font-weight: bold;
 }
 
@@ -172,4 +174,50 @@ h1 {
 .simplex-tableau td.highlight-linked {
     background-color: #b3e5fc !important;
     outline: 2px solid #0288d1;
+}
+
+/* ── Responsive input rows (objective, signs, constraints) ──────────────── */
+.lp-input-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.25rem;
+}
+
+.lp-input-row .lp-input-item {
+    flex: 1 1 120px;
+    min-width: 120px;
+}
+
+.lp-input-row .lp-input-item-fixed {
+    flex: 0 0 68px;
+    min-width: 68px;
+    max-width: 68px;
+}
+
+.lp-input-row .lp-input-item > .input-group,
+.lp-input-row .lp-input-item > .form-select {
+    width: 100%;
+}
+
+.lp-input-row .input-group {
+    flex-wrap: nowrap;
+}
+
+.lp-input-row .input-group > .form-control {
+    min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .lp-input-row {
+        overflow-x: visible;
+    }
+    .lp-input-row .lp-input-item {
+        min-width: 150px;
+    }
+}
+
+:root {
+    --bs-primary: #1b61ca;
 }
