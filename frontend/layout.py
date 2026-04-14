@@ -290,7 +290,7 @@ def create_layout(app):
                     [
                         # Phần bên phải: Số phiên bản
                         html.Span("Version: ", className="text-muted me-1"),
-                        dbc.Badge("2.1", color="primary", className="rounded-pill"),
+                        dbc.Badge("2.2", color="primary", className="rounded-pill"),
                     ],
                     className="small",
                 ),
