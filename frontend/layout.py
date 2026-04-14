@@ -81,7 +81,7 @@ def create_layout(app):
             # Đã giảm độ opacity từ 0.86 xuống 0.5 để lớp kính trong suốt hơn
             "backgroundColor": "rgba(255, 255, 255, 0.5)", 
             "backdropFilter": "blur(8px) saturate(125%)",
-            "WebkitBackdropFilter": "blur(8px) saturate(125%) brightness(0.7)",
+            "WebkitBackdropFilter": "blur(8px) saturate(125%)",
             "borderBottom": "1px solid #d1d5db",
             "boxShadow": "0 6px 16px rgb        a(8, 46, 110, 0.28)",
         },

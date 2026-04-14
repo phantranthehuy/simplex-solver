@@ -332,116 +332,193 @@ D4
 
 ### II.1 Lưu độ chu trình dữ liệu (Data lifecycle)
 
-Nút để vẽ:
-T1 -> Input raw model -> Stage 1 normalized model -> Stage 2 standard form ->
-Stage 3/5 solver state -> terminal result -> frontend explanation/panel -> T2.
+Mục tiêu: mô tả vòng đời dữ liệu từ input thô đến kết quả hiển thị.
 
-Ghi trong ô quan trọng:
-- normalization metadata.
-- var mapping.
-- response contract theo mode.
+Nút để vẽ:
+1. T1: Bắt đầu nhận bài toán LP.
+2. P1: Nhận raw model (goal, objective, constraints, types, rhs).
+3. P2: Stage 1 tạo normalized model + normalization metadata.
+4. P3: Stage 2 tạo standard form + basis metadata.
+5. D1: mode == learning?
+6. P4: Nhánh learning gọi Stage 3, sinh steps/explanations.
+7. P5: Nhánh production gọi Stage 5, sinh compact result + sensitivity.
+8. D2: Trạng thái terminal là optimal?
+9. O1: Terminal không tối ưu (infeasible/unbounded/iteration limit/error).
+10. O2: Terminal tối ưu, đóng gói response contract theo mode.
+11. P6: Frontend parse payload, map biến gốc <-> biến nội bộ.
+12. P7: Render panel + thuyết minh tương ứng mode.
+13. T2: Kết thúc.
+
+Luồng mũi tên:
+T1 -> P1 -> P2 -> P3 -> D1
+- Yes -> P4 -> D2
+- No  -> P5 -> D2
+D2
+- Yes -> O2 -> P6 -> P7 -> T2
+- No  -> O1 -> P6 -> P7 -> T2
 
 ### II.2 Lưu độ ánh xạ biến
 
+Mục tiêu: thể hiện cách biến gốc và ràng buộc được ánh xạ sang biến nội bộ.
+
 Nút để vẽ:
-1. Input variable x_i.
-2. D1: x_i free?
-3. Nếu Yes: tạo x_i_plus, x_i_minus và công thức x_i = x_i_plus - x_i_minus.
-4. Ràng buộc <=: thêm slack s_i.
-5. Ràng buộc >=: thêm surplus e_i và có thể thêm artificial a_i.
-6. Output: bảng mapping biến gốc <-> biến nội bộ.
+1. T1: Bắt đầu ánh xạ mô hình.
+2. P1: Duyệt từng biến gốc x_i và miền giá trị.
+3. D1: x_i là biến free?
+4. P2: Tạo x_i_plus, x_i_minus; ghi công thức x_i = x_i_plus - x_i_minus.
+5. P3: Giữ nguyên biến không free theo chuẩn nonnegative.
+6. P4: Duyệt từng ràng buộc theo loại dấu.
+7. D2: Loại ràng buộc là <=, >= hay = ?
+8. P5: Nếu <=, thêm slack s_i.
+9. P6: Nếu >=, thêm surplus e_i và artificial a_i khi cần basis.
+10. P7: Nếu =, thêm artificial a_i khi không có natural basis.
+11. P8: Cập nhật bảng mapping (biến gốc, biến nội bộ, cột tableau).
+12. O1: Xuất var mapping table + normalization notes.
+13. T2: Kết thúc ánh xạ.
+
+Luồng mũi tên:
+T1 -> P1 -> D1
+- Yes -> P2 -> P4
+- No  -> P3 -> P4
+P4 -> D2
+- <= -> P5 -> P8
+- >= -> P6 -> P8
+- =  -> P7 -> P8
+P8 -> O1 -> T2
 
 ### II.3 Lưu độ so sánh Learning vs Production
 
-Hai cột song song để vẽ:
+Mục tiêu: minh họa sự khác biệt luồng xử lý và output contract giữa 2 mode.
 
-- Nhánh Learning:
-Input -> Stage 1 -> Stage 2 -> Stage 3 -> steps[] + explanation.
+Nút để vẽ:
+1. T1: Bắt đầu nhận request.
+2. P1: Parse input và tham số mode.
+3. D1: mode == learning?
+4. P2: Learning path: Stage 1 -> Stage 2 -> Stage 3.
+5. P3: Tạo output learning: steps[], tableau snapshots, explanation blocks.
+6. O1: Response learning contract.
+7. P4: Production path: Stage 1 -> Stage 4 -> Stage 5.
+8. P5: Tạo output production: objective, solution, sensitivity, metadata tối giản.
+9. O2: Response production contract.
+10. P6: Frontend chọn layout và panel theo mode.
+11. T2: Kết thúc.
 
-- Nhánh Production:
-Input -> Stage 1 -> Stage 4/5 -> compact result + sensitivity.
-
-Nút hợp nhất cuối:
-- Frontend render theo panel tương ứng.
+Luồng mũi tên:
+T1 -> P1 -> D1
+- Yes -> P2 -> P3 -> O1 -> P6 -> T2
+- No  -> P4 -> P5 -> O2 -> P6 -> T2
 
 ### II.4 Lưu độ phát hiện không bị chặn (Unbounded reasoning)
 
+Mục tiêu: diễn giải logic kết luận bài toán không bị chặn trong Phase II.
+
 Nút để vẽ:
-1. Chọn entering column.
-2. D1: Có row nào có a_ij > 0?
-3. Nếu không: ratio test thất bại.
-4. Kết luận: không có leaving variable.
-5. Suy ra tồn tại tia khả thi làm objective tăng vô hạn.
-6. Output: Unbounded.
+1. T1: Bắt đầu một vòng lặp Phase II.
+2. P1: Chọn entering column có reduced cost cải thiện.
+3. P2: Thực hiện ratio test trên các dòng có a_ij > 0.
+4. D1: Có leaving row hợp lệ?
+5. P3: Có -> chọn leaving row (min ratio) và pivot.
+6. P4: Cập nhật tableau/basis, quay lại vòng lặp.
+7. O1: Không có -> ratio test thất bại.
+8. O2: Kết luận Unbounded (tồn tại tia khả thi làm objective tăng vô hạn).
+9. T2: Kết thúc.
+
+Luồng mũi tên:
+T1 -> P1 -> P2 -> D1
+- Yes -> P3 -> P4 -> T2
+- No  -> O1 -> O2 -> T2
 
 ### II.5 Lưu độ phát hiện vô nghiệm
 
-Nút để vẽ:
-1. Kết thúc Phase I.
-2. D1: W* > 0?
-3. Nếu Yes: Infeasible.
-4. Nếu No: Chuyển sang Phase II.
+Mục tiêu: làm rõ hai điểm chặn vô nghiệm: presolve và cuối Phase I.
 
-Nhánh bổ sung:
-- Presolve phát hiện ràng buộc mâu thuẫn sớm -> Infeasible ngay.
+Nút để vẽ:
+1. T1: Bắt đầu kiểm tra tính khả thi.
+2. P1: Presolve rà soát ràng buộc mâu thuẫn/không nhất quán.
+3. D1: Presolve phát hiện mâu thuẫn?
+4. O1: Có -> Infeasible sớm.
+5. P2: Không -> chạy Phase I với objective W.
+6. D2: W* == 0?
+7. P3: Có -> loại artificial, chuyển sang Phase II.
+8. O2: Không -> Infeasible tại cuối Phase I.
+9. T2: Kết thúc.
+
+Luồng mũi tên:
+T1 -> P1 -> D1
+- Yes -> O1 -> T2
+- No  -> P2 -> D2
+D2
+- Yes -> P3 -> T2
+- No  -> O2 -> T2
 
 ### II.6 Lưu độ tạo báo cáo độ nhạy (Sensitivity report)
 
+Mục tiêu: mô tả pipeline sinh sensitivity object sau khi có nghiệm tối ưu.
+
 Nút để vẽ:
-1. Đã có nghiệm tối ưu production.
-2. Tính y (dual prices).
-3. Tính reduced costs cho các biến.
-4. Tính slack và binding constraints.
-5. Đóng gói sensitivity object trong response.
-6. Frontend render trong production panel.
+1. T1: Bắt đầu tạo sensitivity report.
+2. D1: Terminal status là optimal?
+3. O1: Không optimal -> bỏ qua sensitivity, ghi lý do.
+4. P1: Có optimal -> tính y (dual prices/shadow prices).
+5. P2: Tính reduced costs cho biến không cơ sở.
+6. P3: Tính slack và xác định binding constraints.
+7. P4: Tổng hợp metrics ổn định số (nếu có).
+8. P5: Đóng gói sensitivity object vào response production.
+9. P6: Frontend render sensitivity panel.
+10. T2: Kết thúc.
+
+Luồng mũi tên:
+T1 -> D1
+- No  -> O1 -> T2
+- Yes -> P1 -> P2 -> P3 -> P4 -> P5 -> P6 -> T2
 
 ### II.7 Lưu độ kiểm thử hồi quy
 
+Mục tiêu: chuẩn hóa vòng lặp kiểm thử trước khi chốt release/demo.
+
 Nút để vẽ:
-1. Chuẩn bị test suite.
-2. Chạy nhóm testcase:
- optimal, unbounded, infeasible, mixed constraints, degeneracy, stress.
-3. D1: Tất cả pass?
-4. Yes -> đạt release gate.
-5. No -> fix bug -> chạy lại test.
+1. T1: Bắt đầu regression test.
+2. P1: Chuẩn bị môi trường test và dữ liệu mẫu.
+3. P2: Chạy smoke tests (optimal/unbounded/infeasible/mixed constraints).
+4. P3: Chạy tests suy biến và stress.
+5. D1: Tất cả testcase pass?
+6. O1: Yes -> đạt release gate.
+7. P4: No -> thu thập log/failing cases.
+8. P5: Sửa lỗi hồi quy.
+9. P6: Chạy lại testcase lỗi + chạy lại smoke.
+10. Connector C1: Quay lại D1.
+11. T2: Kết thúc.
+
+Luồng mũi tên:
+T1 -> P1 -> P2 -> P3 -> D1
+- Yes -> O1 -> T2
+- No  -> P4 -> P5 -> P6 -> C1 -> D1
 
 ### II.8 Lưu độ startup và vận hành
 
+Mục tiêu: mô tả quy trình chạy hệ thống ổn định cho demo và báo cáo.
+
 Nút để vẽ:
-1. Kích hoạt .venv.
-2. Chạy scripts/dev_up.sh.
-3. Khởi động backend uvicorn.
-4. Khởi động frontend dash.
-5. Kiểm tra health/gọi API thử.
-6. Chạy scripts/test_smoke.sh.
-7. D1: Test pass?
-8. Yes -> sẵn sàng demo/báo cáo.
-9. No -> debug và lặp lại.
+1. T1: Bắt đầu quy trình vận hành local.
+2. P1: Kích hoạt virtual environment và cài dependencies.
+3. P2: Khởi động backend service.
+4. P3: Khởi động frontend service.
+5. P4: Kiểm tra health endpoint và gọi API mẫu.
+6. D1: Health check đạt?
+7. P5: Không đạt -> đọc log, sửa cấu hình, restart dịch vụ.
+8. P6: Đạt -> chạy smoke test script.
+9. D2: Smoke test pass?
+10. O1: Yes -> hệ thống sẵn sàng demo/báo cáo.
+11. P7: No -> debug lỗi runtime/test và quay lại bước khởi động.
+12. Connector C1: Quay lại P2.
+13. T2: Kết thúc.
 
----
+Luồng mũi tên:
+T1 -> P1 -> P2 -> P3 -> P4 -> D1
+- No  -> P5 -> C1 -> P2
+- Yes -> P6 -> D2
+D2
+- Yes -> O1 -> T2
+- No  -> P7 -> C1 -> P2
 
-## III. Checklist Trình Bày Trong Báo Cáo
 
-### III.1 Checklist nội dung mỗi lưu độ
-
-Mỗi lưu độ cần có đủ 4 nhóm thông tin:
-
-1. Input.
-2. Các nút xử lý chính.
-3. Nút quyết định và nhánh Yes/No.
-4. Output/terminal state.
-
-### III.2 Checklist hình thức
-
-1. Đặt tên nhật quán: Stage 1..5, Phase I/II, pivot, ratio test, reduced cost, basis.
-2. Có đánh số nút nếu lưu độ dài (P1, D1, O1...).
-3. Các nhánh quan trọng phải có nhãn điều kiện rõ ràng.
-
-### III.3 Thứ tự chèn lưu độ để bài báo cáo mạch lạc
-
-Thứ tự để xuất:
-
-1. I.1 -> I.2.
-2. I.3 -> I.4 -> I.5 -> I.6 -> I.7 -> I.8 -> I.9.
-3. I.10 -> I.11 -> I.12.
-4. Bổ sung II.1 -> II.8 để tăng tính học thuật và tính thuyết phục.
